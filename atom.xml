@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[The inception and journey of ideas]]></title>
-  <link href="http://stefancocora.github.io/atom.xml" rel="self"/>
-  <link href="http://stefancocora.github.io/"/>
-  <updated>2015-03-08T17:43:57+00:00</updated>
-  <id>http://stefancocora.github.io/</id>
+  <link href="http://www.procmind.com/atom.xml" rel="self"/>
+  <link href="http://www.procmind.com/"/>
+  <updated>2015-03-08T17:48:31+00:00</updated>
+  <id>http://www.procmind.com/</id>
   <author>
     <name><![CDATA[stefan]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Hello World]]></title>
-    <link href="http://stefancocora.github.io/blog/21/02/2015/hello-world/"/>
+    <link href="http://www.procmind.com/blog/21/02/2015/hello-world/"/>
     <updated>2015-02-21T17:28:35+00:00</updated>
-    <id>http://stefancocora.github.io/blog/21/02/2015/hello-world</id>
+    <id>http://www.procmind.com/blog/21/02/2015/hello-world</id>
     <content type="html"><![CDATA[<h2>Hello World</h2>
 
 <figure class='code'><figcaption><span>hello.rb </span></figcaption>
