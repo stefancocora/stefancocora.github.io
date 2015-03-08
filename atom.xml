@@ -4,7 +4,7 @@
   <title><![CDATA[The inception and journey of ideas]]></title>
   <link href="http://www.procmind.com/atom.xml" rel="self"/>
   <link href="http://www.procmind.com/"/>
-  <updated>2015-03-08T18:23:26+00:00</updated>
+  <updated>2015-03-08T18:29:38+00:00</updated>
   <id>http://www.procmind.com/</id>
   <author>
     <name><![CDATA[stefan]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Hello World]]></title>
-    <link href="http://www.procmind.com/blog/21/02/2015/hello-world/"/>
+    <link href="http://www.procmind.com/blog/2015/02/21/hello-world/"/>
     <updated>2015-02-21T17:28:35+00:00</updated>
-    <id>http://www.procmind.com/blog/21/02/2015/hello-world</id>
+    <id>http://www.procmind.com/blog/2015/02/21/hello-world</id>
     <content type="html"><![CDATA[<h2>Hello World</h2>
 
 <figure class='code'><figcaption><span>hello.rb </span></figcaption>
