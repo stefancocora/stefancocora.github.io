@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Initial | The inception and journey of ideas]]></title>
   <link href="http://stefancocora.github.io/blog/categories/initial/atom.xml" rel="self"/>
   <link href="http://stefancocora.github.io/"/>
-  <updated>2015-03-08T17:34:08+00:00</updated>
+  <updated>2015-03-08T17:43:57+00:00</updated>
   <id>http://stefancocora.github.io/</id>
   <author>
     <name><![CDATA[stefan]]></name>
@@ -38,9 +38,22 @@
 </pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">echo</span> <span class="p">&amp;</span>ldquo<span class="p">;</span>Hello World<span class="p">&amp;</span>rdquo<span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure></p>
 
-<p>This is all for now, come back later there will be aditional content.</p>
+<p><figure class='code'><figcaption><span>hello.go </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kn">package</span> <span class="nx">main</span>
+</span><span class='line'><span class="kn">import</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">fmt</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;&lt;</span><span class="o">/</span><span class="nx">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="nx">p</span><span class="p">&gt;</span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">hello</span> <span class="nx">world</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
 
-<p>.</p>
+<p>This is all for now, come back later there will be aditional content.</p>
 ]]></content>
   </entry>
   
