@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[The inception and journey of ideas]]></title>
+  <link href="http://stefancocora.github.io/atom.xml" rel="self"/>
+  <link href="http://stefancocora.github.io/"/>
+  <updated>2015-03-08T17:34:08+00:00</updated>
+  <id>http://stefancocora.github.io/</id>
+  <author>
+    <name><![CDATA[stefan]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Hello World]]></title>
+    <link href="http://stefancocora.github.io/blog/21/02/2015/hello-world/"/>
+    <updated>2015-02-21T17:28:35+00:00</updated>
+    <id>http://stefancocora.github.io/blog/21/02/2015/hello-world</id>
+    <content type="html"><![CDATA[<h2>Hello World</h2>
+
+<figure class='code'><figcaption><span>hello.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Hello World&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!-- more -->
+
+
+
+
+<figure class='code'><figcaption><span>hello.py </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">print</span> <span class="s">&quot;Hello World&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>hello.sh </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">echo</span> <span class="s2">&quot;Hello World&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is all for now, come back later there will be aditional content.</p>
+
+<p>.</p>
+]]></content>
+  </entry>
+  
+</feed>
