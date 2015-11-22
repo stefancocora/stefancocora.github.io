@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: X2go | The inception and journey of ideas]]></title>
+  <link href="http://www.procmind.com/blog/categories/x2go/atom.xml" rel="self"/>
+  <link href="http://www.procmind.com/"/>
+  <updated>2015-11-22T17:28:43+00:00</updated>
+  <id>http://www.procmind.com/</id>
+  <author>
+    <name><![CDATA[stefan]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[X2go and Ssh Ecdsa Keys]]></title>
+    <link href="http://www.procmind.com/blog/2015/11/21/x2go-and-ssh-ecdsa-keys/"/>
+    <updated>2015-11-21T21:53:15+00:00</updated>
+    <id>http://www.procmind.com/blog/2015/11/21/x2go-and-ssh-ecdsa-keys</id>
+    <content type="html"><![CDATA[<p>reading time: ~7m</p>
+
+<p>Is <code>x2goclient</code> continuously asking you for <strong>enter passphrase to decrypt a key</strong> even when you absolutely know you&rsquo;ve typed it correctly, or you already know the ssh key is handled by your ssh agent ?</p>
+
+<p>Have you verified that your ssh key based login is working, via a terminal shell already ?</p>
+
+<p>If yes, than read further to understand all about why <code>x2goclient</code> behaves that way and why I think this is a new bug in <code>x2goclient</code>.</p>
+
+<!-- more -->
+
+
+<hr />
+
+<p>First though, a short intro to x2go.</p>
+
+<h1>What is x2go ?</h1>
+
+<p>X2go is a <strong>remote desktop solution</strong> of sorts, it allows one to access a graphical desktop of a computer over a <em>low bandwidth</em> (or high bandwidth) connection <a href="http://wiki.x2go.org/doku.php/doc:deployment-stories:start">http://wiki.x2go.org/doku.php/doc:deployment-stories:start</a> [1]</p>
+
+<p>X2go <strong>works in a server client architecture</strong>, with <em>x2go server</em> being installed on the systems to be accessed, and <em>x2goclient</em> being installed on the systems accessing the <em>x2go server</em> ( typically the x2goclients would be your workstations and laptops connecting to a shared/central x2go server )</p>
+
+<p>X2go operates and competes in the same space as microsoft remote desktop, although uses a <strong>different wire transfer protocol tunneled through an OpenSSH encrypted connection</strong> ( see [1] ).</p>
+
+<p>X2go can tunnel through the OpenSSH connection anything from the GUI on the server side, to sound and file transfers.</p>
+
+<p>X2go is mostly meant to access Linux <strong>servers</strong> from <strong>clients</strong> running different OSes (Linux/Mac/Windows).</p>
+
+<h1>How does x2go help me ?</h1>
+
+<p>I have at home a very powerful desktop with plently of RAM and CPU cycles.</p>
+
+<p>I run different kinds of headless virtualisation workloads on it ( mainly kvm and sometimes virtualbox ).</p>
+
+<p>That being said I want to use the RAM and CPU cycles for the virtualisation workloads and not to run an Xorg GUI and a Desktop Environment.</p>
+
+<p>Sometimes, the tools that work with virtualisation, have to be run with a GUI that the virtualisation provider provides, for debugging purposes ( think the virtualbox GUI or qemu/kvm GUI ).</p>
+
+<p>Since I work through the terminal and via OpenSSH all the time, I naturally looked for a way of not having to run an entire Desktop Environment on my desktop all the time. I wanted to have the choice and flexibility of when to use a DE and when to not use a DE.</p>
+
+<p>X2go allows me to spawn an entire KDE session when I use the <code>x2goclient</code> tool, run the necessary GUI debugging tools, then disconnect without needing to worry about turning off the DE on my headless desktop system. It is a handsoff way of running a DE only when you need to.</p>
+
+<p>Now you&rsquo;ll see 2 screenshots, capturing an x2go session, showing that there is no Xorg running, and that x2go starts a kde session.</p>
+
+<p><img class="center" src="/images/posts/x2goclient-session-kde.png" title="&lsquo;No Xorg running&rsquo;" ></p>
+
+<p><img class="center" src="/images/posts/x2goclient-session-kde-02.png" title="&lsquo;KDE is started by x2go&rsquo;" ></p>
+
+<h1>The x2go bug</h1>
+
+<p>What is this x2go bug that I&rsquo;m talking about ?</p>
+
+<p>As it happens, <strong>x2go cannot use a private OpenSSH key of the ECDSA type using bcrypt as the passphrase hashing algorithm</strong> [2] [3]</p>
+
+<p>I&rsquo;ve tested this behaviour with both x2goclient nightly <code>4.0.5.1-0~1107~ubuntu14.04.1</code> and x2goclient stable <code>4.0.5.0-0~1099~ubuntu14.04.1</code> from a laptop running Ubuntu 14.04 amd64.</p>
+
+<p>If I try to use the x2goclient with the ECDSA(bcrypt) type of ssh key I continuously get prompted to enter a passphrase to decrypt the key, even after typing the passphrase successfully x2go will continue the loop of asking for a passphrase. (see this screenshot)</p>
+
+<p><img class="center" src="/images/posts/x2goclient-session-kde-04.png" title="&lsquo;Enter passphrase to decrypt a key&rsquo;" ></p>
+
+<h1>The solution</h1>
+
+<p>The solution to this issue is very simple, once you&rsquo;ve understood the problem :)</p>
+
+<ul>
+<li><p>Generate a second ssh keypair using RSA keys [4]
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>ssh-keygen -trsa -b4096
+</span><span class='line'>Generating public/private rsa key pair.
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></p></li>
+<li><p>place the ssh public key on the x2go server</p></li>
+<li>test connectivity via a terminal ssh session</li>
+<li>instruct x2goclient to use the rsa key to connect</li>
+</ul>
+
+
+<p>How do I know the difference between and ECDSA(with bcrypt) new style key and an old style RSA key I hear you ask ?</p>
+
+<p>As it turns out the header of the ssh private key will tell you.</p>
+
+<p><figure class='code'><figcaption><span>ECDSA with bcrypt new style key </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="p">&amp;</span>mdash<span class="p">;&amp;</span>ndash<span class="p">;</span>BEGIN OPENSSH PRIVATE KEY<span class="p">&amp;</span>mdash<span class="p">;&amp;</span>ndash<span class="p">;</span>
+</span><span class='line'>base64 nonsense
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p><figure class='code'><figcaption><span>old style RSA key </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="p">&amp;</span>mdash<span class="p">;&amp;</span>ndash<span class="p">;</span>BEGIN RSA PRIVATE KEY<span class="p">&amp;</span>mdash<span class="p">;&amp;</span>ndash<span class="p">;</span>
+</span><span class='line'>base64 nonsense
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h1>Comments</h1>
+
+<p>If you have any comments please use twitter, I&rsquo;ve not enabled any comments on this blog yet.</p>
+
+<h1>Resources and inspiration</h1>
+
+<p>[1] - <a href="http://wiki.x2go.org/doku.php/doc:deployment-stories:start">http://wiki.x2go.org/doku.php/doc:deployment-stories:start</a></p>
+
+<p>[2] - <a href="https://wiki.archlinux.org/index.php/SSH_keys#ECDSA">https://wiki.archlinux.org/index.php/SSH_keys#ECDSA</a></p>
+
+<p>[3] - <a href="http://www.tedunangst.com/flak/post/new-openssh-key-format-and-bcrypt-pbkdf">http://www.tedunangst.com/flak/post/new-openssh-key-format-and-bcrypt-pbkdf</a></p>
+
+<p>[4] - <a href="https://wiki.archlinux.org/index.php/SSH_keys#RSA">https://wiki.archlinux.org/index.php/SSH_keys#RSA</a></p>
+]]></content>
+  </entry>
+  
+</feed>

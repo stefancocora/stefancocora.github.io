@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Hello World - The inception and journey of ideas</title>
+  <title>X2go and Ssh Ecdsa Keys - The inception and journey of ideas</title>
   <meta name="author" content="stefan">
 
   
@@ -14,15 +14,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.procmind.com/blog/2015/02/21/hello-world/">
+  <link rel="canonical" href="http://www.procmind.com/blog/2015/11/21/x2go-and-ssh-ecdsa-keys/">
   <link href="/favicon.png" type="image/png" rel="icon">
   <link href="/atom.xml" rel="alternate" title="The inception and journey of ideas" type="application/atom+xml">
 
   <!-- http://opengraphprotocol.org/ -->
   <meta name="twitter:card" content="summary_large_image">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="http://www.procmind.com/blog/2015/02/21/hello-world/">
-  <meta property="og:title" content="Hello World - The inception and journey of ideas">
+  <meta property="og:url" content="http://www.procmind.com/blog/2015/11/21/x2go-and-ssh-ecdsa-keys/">
+  <meta property="og:title" content="X2go and Ssh Ecdsa Keys - The inception and journey of ideas">
   
 
   <script src="/javascripts/libs/jquery/jquery-2.1.3.min.js"></script>
@@ -118,69 +118,138 @@
 
 
 
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2015-02-21T17:28:35+00:00"  data-updated="true" itemprop="datePublished dateCreated">21/02/2015</time>
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2015-11-21T21:53:15+00:00"  data-updated="true" itemprop="datePublished dateCreated">21/11/2015</time>
         
       </p>
     
     
     <h1 class="entry-title" itemprop="name headline">
-        Hello World
+        X2go and Ssh Ecdsa Keys
         
     </h1>
     
   </header>
 
 
-<div class="entry-content clearfix" itemprop="articleBody description"><h2>Hello World</h2>
+<div class="entry-content clearfix" itemprop="articleBody description"><p>reading time: ~7m</p>
 
-<figure class='code'><figcaption><span>hello.rb </span></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Hello World&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>Is <code>x2goclient</code> continuously asking you for <strong>enter passphrase to decrypt a key</strong> even when you absolutely know you&rsquo;ve typed it correctly, or you already know the ssh key is handled by your ssh agent ?</p>
 
+<p>Have you verified that your ssh key based login is working, via a terminal shell already ?</p>
 
-
+<p>If yes, than read further to understand all about why <code>x2goclient</code> behaves that way and why I think this is a new bug in <code>x2goclient</code>.</p>
 
 <!-- more -->
 
 
+<hr />
+
+<p>First though, a short intro to x2go.</p>
+
+<h1>What is x2go ?</h1>
+
+<p>X2go is a <strong>remote desktop solution</strong> of sorts, it allows one to access a graphical desktop of a computer over a <em>low bandwidth</em> (or high bandwidth) connection <a href="http://wiki.x2go.org/doku.php/doc:deployment-stories:start">http://wiki.x2go.org/doku.php/doc:deployment-stories:start</a> [1]</p>
+
+<p>X2go <strong>works in a server client architecture</strong>, with <em>x2go server</em> being installed on the systems to be accessed, and <em>x2goclient</em> being installed on the systems accessing the <em>x2go server</em> ( typically the x2goclients would be your workstations and laptops connecting to a shared/central x2go server )</p>
+
+<p>X2go operates and competes in the same space as microsoft remote desktop, although uses a <strong>different wire transfer protocol tunneled through an OpenSSH encrypted connection</strong> ( see [1] ).</p>
+
+<p>X2go can tunnel through the OpenSSH connection anything from the GUI on the server side, to sound and file transfers.</p>
+
+<p>X2go is mostly meant to access Linux <strong>servers</strong> from <strong>clients</strong> running different OSes (Linux/Mac/Windows).</p>
+
+<h1>How does x2go help me ?</h1>
+
+<p>I have at home a very powerful desktop with plently of RAM and CPU cycles.</p>
+
+<p>I run different kinds of headless virtualisation workloads on it ( mainly kvm and sometimes virtualbox ).</p>
+
+<p>That being said I want to use the RAM and CPU cycles for the virtualisation workloads and not to run an Xorg GUI and a Desktop Environment.</p>
+
+<p>Sometimes, the tools that work with virtualisation, have to be run with a GUI that the virtualisation provider provides, for debugging purposes ( think the virtualbox GUI or qemu/kvm GUI ).</p>
+
+<p>Since I work through the terminal and via OpenSSH all the time, I naturally looked for a way of not having to run an entire Desktop Environment on my desktop all the time. I wanted to have the choice and flexibility of when to use a DE and when to not use a DE.</p>
+
+<p>X2go allows me to spawn an entire KDE session when I use the <code>x2goclient</code> tool, run the necessary GUI debugging tools, then disconnect without needing to worry about turning off the DE on my headless desktop system. It is a handsoff way of running a DE only when you need to.</p>
+
+<p>Now you&rsquo;ll see 2 screenshots, capturing an x2go session, showing that there is no Xorg running, and that x2go starts a kde session.</p>
+
+<p><img class="center" src="/images/posts/x2goclient-session-kde.png" title="'No Xorg running'" ></p>
+
+<p><img class="center" src="/images/posts/x2goclient-session-kde-02.png" title="'KDE is started by x2go'" ></p>
+
+<h1>The x2go bug</h1>
+
+<p>What is this x2go bug that I&rsquo;m talking about ?</p>
+
+<p>As it happens, <strong>x2go cannot use a private OpenSSH key of the ECDSA type using bcrypt as the passphrase hashing algorithm</strong> [2] [3]</p>
+
+<p>I&rsquo;ve tested this behaviour with both x2goclient nightly <code>4.0.5.1-0~1107~ubuntu14.04.1</code> and x2goclient stable <code>4.0.5.0-0~1099~ubuntu14.04.1</code> from a laptop running Ubuntu 14.04 amd64.</p>
+
+<p>If I try to use the x2goclient with the ECDSA(bcrypt) type of ssh key I continuously get prompted to enter a passphrase to decrypt the key, even after typing the passphrase successfully x2go will continue the loop of asking for a passphrase. (see this screenshot)</p>
+
+<p><img class="center" src="/images/posts/x2goclient-session-kde-04.png" title="'Enter passphrase to decrypt a key'" ></p>
+
+<h1>The solution</h1>
+
+<p>The solution to this issue is very simple, once you&rsquo;ve understood the problem :)</p>
+
+<ul>
+<li>Generate a second ssh keypair using RSA keys [4]</li>
+</ul>
 
 
-<figure class='code'><figcaption><span>hello.py </span></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">print</span> <span class="s">&quot;Hello World&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span>hello.sh </span></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">echo</span> <span class="s2">&quot;Hello World&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span>hello.go </span></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kn">package</span> <span class="nx">main</span>
-</span><span class='line'><span class="kn">import</span> <span class="s">&quot;fmt&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="p">}</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>ssh-keygen -trsa -b4096
+</span><span class='line'>Generating public/private rsa key pair.
+</span><span class='line'>...
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This is all for now, come back later there will be aditional content.</p>
+<ul>
+<li>place the ssh public key on the x2go server</li>
+<li>test connectivity via a terminal ssh session</li>
+<li>instruct x2goclient to use the rsa key to connect</li>
+</ul>
 
-<hr />
+
+<p>How do I know the difference between and ECDSA(with bcrypt) new style key and an old style RSA key I hear you ask ?</p>
+
+<p>As it turns out the header of the ssh private key will tell you.</p>
+
+<figure class='code'><figcaption><span>ECDSA with bcrypt new style key </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>-----BEGIN OPENSSH PRIVATE KEY-----
+</span><span class='line'>base64 nonsense
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>old style RSA key </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>-----BEGIN RSA PRIVATE KEY-----
+</span><span class='line'>base64 nonsense
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Comments</h1>
+
+<p>If you have any comments please use twitter, I&rsquo;ve not enabled any comments on this blog yet.</p>
+
+<h1>Resources and inspiration</h1>
+
+<p>[1] - <a href="http://wiki.x2go.org/doku.php/doc:deployment-stories:start">http://wiki.x2go.org/doku.php/doc:deployment-stories:start</a></p>
+
+<p>[2] - <a href="https://wiki.archlinux.org/index.php/SSH_keys#ECDSA">https://wiki.archlinux.org/index.php/SSH_keys#ECDSA</a></p>
+
+<p>[3] - <a href="http://www.tedunangst.com/flak/post/new-openssh-key-format-and-bcrypt-pbkdf">http://www.tedunangst.com/flak/post/new-openssh-key-format-and-bcrypt-pbkdf</a></p>
+
+<p>[4] - <a href="https://wiki.archlinux.org/index.php/SSH_keys#RSA">https://wiki.archlinux.org/index.php/SSH_keys#RSA</a></p>
 </div>
 
 
@@ -204,13 +273,13 @@
 
 
 
-<span class="glyphicon glyphicon-calendar"></span> <time datetime="2015-02-21T17:28:35+00:00"  data-updated="true" itemprop="datePublished dateCreated">21/02/2015</time>
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2015-11-21T21:53:15+00:00"  data-updated="true" itemprop="datePublished dateCreated">21/11/2015</time>
           
 
 <span class="glyphicon glyphicon-tags"></span>&nbsp;
 <span class="categories">
   
-    <a class='category' href='/blog/categories/initial/'>initial</a>
+    <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/openssh/'>openssh</a>, <a class='category' href='/blog/categories/ubuntu/'>ubuntu</a>, <a class='category' href='/blog/categories/x2go/'>x2go</a>
   
 </span>
 
@@ -227,8 +296,8 @@
         
           <ul class="meta text-muted pager">
             
+            <li class="previous"><a href="/blog/2015/05/31/1year-living-with-linux-on-macbookpro-retina/" title="Previous Post: 1year-living-with-linux-on-macbookpro-retina">&laquo; 1year-living-with-linux-on-macbookpro-retina</a></li>
             
-            <li class="next"><a href="/blog/2015/04/19/tweetdeck-on-linux/" title="Next Post: Containerized tweetdeck on linux">Containerized tweetdeck on linux &raquo;</a></li>
             
           </ul>
         
@@ -260,13 +329,13 @@
   
   <div id="recent_posts" class="list-group">
     
-    <a class="list-group-item " href="/blog/2015/11/21/x2go-and-ssh-ecdsa-keys/">X2go and Ssh Ecdsa Keys</a>
+    <a class="list-group-item active" href="/blog/2015/11/21/x2go-and-ssh-ecdsa-keys/">X2go and Ssh Ecdsa Keys</a>
     
     <a class="list-group-item " href="/blog/2015/05/31/1year-living-with-linux-on-macbookpro-retina/">1year-living-with-linux-on-macbookpro-retina</a>
     
     <a class="list-group-item " href="/blog/2015/04/19/tweetdeck-on-linux/">Containerized Tweetdeck on Linux</a>
     
-    <a class="list-group-item active" href="/blog/2015/02/21/hello-world/">Hello World</a>
+    <a class="list-group-item " href="/blog/2015/02/21/hello-world/">Hello World</a>
     
   </div>
 </section>
