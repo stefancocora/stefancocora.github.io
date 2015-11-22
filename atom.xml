@@ -4,7 +4,7 @@
   <title><![CDATA[The inception and journey of ideas]]></title>
   <link href="http://www.procmind.com/atom.xml" rel="self"/>
   <link href="http://www.procmind.com/"/>
-  <updated>2015-11-22T17:41:46+00:00</updated>
+  <updated>2015-11-22T17:43:29+00:00</updated>
   <id>http://www.procmind.com/</id>
   <author>
     <name><![CDATA[stefan]]></name>
@@ -137,40 +137,6 @@
 <p>[3] - <a href="http://www.tedunangst.com/flak/post/new-openssh-key-format-and-bcrypt-pbkdf">http://www.tedunangst.com/flak/post/new-openssh-key-format-and-bcrypt-pbkdf</a></p>
 
 <p>[4] - <a href="https://wiki.archlinux.org/index.php/SSH_keys#RSA">https://wiki.archlinux.org/index.php/SSH_keys#RSA</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[1year-living-with-linux-on-macbookpro-retina]]></title>
-    <link href="http://www.procmind.com/blog/2015/05/31/1year-living-with-linux-on-macbookpro-retina/"/>
-    <updated>2015-05-31T13:11:50+01:00</updated>
-    <id>http://www.procmind.com/blog/2015/05/31/1year-living-with-linux-on-macbookpro-retina</id>
-    <content type="html"><![CDATA[<p>Opening words</p>
-
-<h1>Introduction and motivation</h1>
-
-<!-- more -->
-
-
-<h1>add a summary paragraph like in this blog post</h1>
-
-<p><a href="https://www.dark.ca/2015/01/27/handling-extant-resources-in-terraform/">https://www.dark.ca/2015/01/27/handling-extant-resources-in-terraform/</a></p>
-
-<h1>Why</h1>
-
-<h1>Hardware description</h1>
-
-<h1>Software description</h1>
-
-<h1>Installation notes</h1>
-
-<p>This is what I remember since I don&rsquo;t have detailed installation notes.</p>
-
-<h1>What works</h1>
-
-<h1>What doesn&rsquo;t work</h1>
-
-<h1>Video showcase</h1>
 ]]></content>
   </entry>
   
