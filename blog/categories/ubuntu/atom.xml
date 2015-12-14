@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ubuntu | The inception and journey of ideas]]></title>
   <link href="http://www.procmind.com/blog/categories/ubuntu/atom.xml" rel="self"/>
   <link href="http://www.procmind.com/"/>
-  <updated>2015-11-22T19:52:04+00:00</updated>
+  <updated>2015-12-14T12:29:31+00:00</updated>
   <id>http://www.procmind.com/</id>
   <author>
     <name><![CDATA[stefan]]></name>
@@ -12,6 +12,757 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Driving a Macbook Pro Retina Part 1]]></title>
+    <link href="http://www.procmind.com/blog/2015/12/05/linux-driving-a-macbook-pro-retina/"/>
+    <updated>2015-12-05T15:54:14+00:00</updated>
+    <id>http://www.procmind.com/blog/2015/12/05/linux-driving-a-macbook-pro-retina</id>
+    <content type="html"><![CDATA[<p>Have you ever felt the OSx UI/system to be too restrictive ?</p>
+
+<p>Are you fed up with how the UI on the later installations of OSx is transforming itself into a phone UI ?</p>
+
+<p>&lt; insert_additional_favourite_reason_here ></p>
+
+<p>Have you ever wondered how it is like to run a linux distro on a macbook pro retina, just in case you had to use a macbook pro but don&rsquo;t want/like to use the OSx installation ?</p>
+
+<p>If so than continue reading to find out more.</p>
+
+<!-- more -->
+
+
+<h1>Summary / tl;dr for this blog post</h1>
+
+<p>Since this is a large blog post I&rsquo;ll give you a content summary:</p>
+
+<ul>
+<li><strong>introduction and motivation</strong> telling you why I chose to use linux on a macbook pro retina</li>
+<li><strong>hardware description</strong></li>
+<li>the things I can remember about the <strong>installation</strong> procedure</li>
+<li>summary of <strong>laptop functions that work</strong></li>
+<li>summary of <strong>laptop functions that don&rsquo;t work and glitches</strong></li>
+<li>summary of <strong>other fixes and hacks that I employ</strong> to drive the macbook. Some of these scripts/hacks are not only macbook related, they can be used on other hardware.</li>
+<li><strong>video showcase</strong> where I show the macbook being driven by linux ( in part 2 of this blog post )</li>
+<li>links to <strong>resources and inspiration</strong> that have helped me</li>
+</ul>
+
+
+<h1>Introduction and motivation</h1>
+
+<p>My work laptop is a macbook pro retina 11,3 as can be seen from the <code>lshw</code> output.</p>
+
+<pre><code class="bash">sudo lshw
+...
+  *-core
+       description: Motherboard
+       ...
+       vendor: Apple Inc.
+       physical id: 0
+       version: MacBookPro11,3
+</code></pre>
+
+<p>I don&rsquo;t have an option to choose a linux friendly laptop so I&rsquo;m stuck with the macbook pro for work.</p>
+
+<p>As a personal preference, at the same time I want the flexibility and ease of use of the linux ecosystem and tooling:</p>
+
+<ul>
+<li>really simple way of installing software: via a package manager</li>
+<li>desktop environment / window manager of choice - not the same phone UI enforced on everyone</li>
+<li>native support for container technology ( no need for another VM to run containers - run containers directly on the laptop installation )</li>
+<li>native kernel resource management using cgroups</li>
+</ul>
+
+
+<p>I&rsquo;ve decided to test how easy it is to run a linux distro on a macbook pro retina.</p>
+
+<p>This decision was taken at a time when ubuntu 14.04 was in beta stage.</p>
+
+<h1>Hardware description</h1>
+
+<p>The laptop is a macbook pro retina, late 2013 model. ( MacbookPro11,3 as <code>lshw</code> shows )</p>
+
+<p>You can find the full technical specification on the apple support website [14]</p>
+
+<p>Ubuntu has a community maintained wiki page about the MacbookPro11,3 [15]</p>
+
+<p>See the intel ark website for a detailed description of this beast of a CPU [16]</p>
+
+<p><figure class='code'><figcaption><span>cpu </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'>processor       : 7
+</span><span class='line'>vendor_id       : GenuineIntel
+</span><span class='line'>cpu family      : 6
+</span><span class='line'>model           : 70
+</span><span class='line'>model name      : Intel<span class="p">&amp;</span>reg<span class="p">;</span> Core<span class="p">&amp;</span>trade<span class="p">;</span> i7-4850HQ CPU @ 2.30GHz
+</span><span class='line'>stepping        : 1
+</span><span class='line'>microcode       : 0xf
+</span><span class='line'>cpu MHz         : 2506.011
+</span><span class='line'>cache size      : <span class="m">6144</span> KB
+</span><span class='line'>physical id     : 0
+</span><span class='line'>siblings        : 8
+</span><span class='line'>core id         : 3
+</span><span class='line'>cpu cores       : 4
+</span><span class='line'>apicid          : 7
+</span><span class='line'>initial apicid  : 7
+</span><span class='line'>fpu             : yes
+</span><span class='line'>fpu_exception   : yes
+</span><span class='line'>cpuid level     : 13
+</span><span class='line'>wp              : yes
+</span><span class='line'>flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm
+</span><span class='line'>bogomips        : 4589.44
+</span><span class='line'>clflush size    : 64
+</span><span class='line'>cache_alignment : 64
+</span><span class='line'>address sizes   : <span class="m">39</span> bits physical, <span class="m">48</span> bits virtual
+</span><span class='line'>power management:
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p><figure class='code'><figcaption><span>16GB RAM </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>free -m
+</span><span class='line'>             total       used       free     shared    buffers     cached
+</span><span class='line'>Mem:         <span class="m">15956</span>       <span class="m">4543</span>      <span class="m">11413</span>         <span class="m">56</span>        <span class="m">219</span>       1233
+</span><span class='line'>-/+ buffers/cache:       <span class="m">3090</span>      12866
+</span><span class='line'>Swap:         <span class="m">3905</span>          <span class="m">0</span>       3905
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p><figure class='code'><figcaption><span>Nvidia graphics card </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>lspci
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'>01:00.0 VGA compatible controller: NVIDIA Corporation GK107M <span class="o">[</span>GeForce GT 750M Mac Edition<span class="o">]</span> <span class="o">(</span>rev a1<span class="o">)</span>
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>The integrated Intel Iris 5200 graphics card is invisible to the linux kernel, continue reading to find out why.</p>
+
+<p><figure class='code'><figcaption><span>500GB SSD </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>        -disk
+</span><span class='line'>             description: ATA Disk
+</span><span class='line'>             product: APPLE SSD SM0512
+</span><span class='line'>             physical id: 0.0.0
+</span><span class='line'>             bus info: scsi@0:0.0.0
+</span><span class='line'>             logical name: /dev/sda
+</span><span class='line'>             <span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'>             size: 465GiB <span class="o">(</span>500GB<span class="o">)</span>
+</span><span class='line'>             capabilities: partitioned partitioned:dos
+</span><span class='line'>             configuration: <span class="nv">ansiversion</span><span class="o">=</span><span class="m">5</span> <span class="nv">sectorsize</span><span class="o">=</span>4096
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h1>Installation</h1>
+
+<p>I&rsquo;ll lay down the installation notes from memory since I don&rsquo;t have my detailed installation notes.</p>
+
+<p>I chose to install, as a linux distro of my preference Ubuntu 14.04 LTS, because I could remember from previous encounters with running linux on a macbook pro(in 2010 and in 2012) that Ubuntu&rsquo;s kernel had better support for the macbook pro hardware.</p>
+
+<p>Seeing Ubuntu as having better kernel support for macbook hardware is <strong>not the case these days</strong> as you can see from the list of resources at the end of this post. These days people have installed various other distros on macbooks.</p>
+
+<p>The installation has taken place in march 2014, when Ubuntu 14.04 LTS was in beta stage.</p>
+
+<h3>boot manager</h3>
+
+<p><del>Even before thinking of installing linux on your macbook you have to install a boot manager ( equivalent to grub) capable of being booted by the Apple firmware ( equivalent to a bios ).</del></p>
+
+<p><del>rEFInd [1] installs itself on the MBR of the HDD/SSD. rEFInd will give you the ability to choose which OS to boot in the eventuality of a dual-boot scenario ( which is what I intended originally )</del></p>
+
+<p>As I found out during the initial installation, these days <code>grub-efi</code> is more than capable to act as the boot manager to boot from the Apple firmware, <em>rEFInd</em> is not necessary for single boot. For dual-boot it might still be necessary. [2]</p>
+
+<p>This is how you can check if you&rsquo;re booting using <code>grub-efi</code> as opposed to <code>rEFInd</code> [17]</p>
+
+<pre><code class="bash">sudo efibootmgr
+
+BootCurrent: 0000
+Timeout: 5 seconds
+BootOrder: 0000
+Boot0000* ubuntu
+Boot0080* Mac OS X
+Boot0082* 
+...
+df -h |grep efi
+/dev/sda1              487M  3.4M  483M   1% /boot/efi
+</code></pre>
+
+<h3>HDD partitioning</h3>
+
+<p>Initially I&rsquo;ve intended for this installation to be a dual boot system ( 50% HDD space for OSx, 50% for linux )</p>
+
+<p>This was because at the time of installation a macbook pro retina was still <em>new</em> hardware and I wasn&rsquo;t really sure if I would have enough support on linux to run the macbook, with linux, in an satisfactory state.</p>
+
+<p>Because the installation took place very late during the night, and lack of sleep always strikes back, during the installation procedure I happen to choose as a partitioning scheme: full encrypted LVM.</p>
+
+<p>This partitioning scheme makes Ubiquity [3], the ubuntu graphical live CD/DVD installer, overwrite the MBR of the SSD making it impossible at this point to boot into OSx.</p>
+
+<p>Not having an OSx installer DVD at hand at this point I said it is time to go all the way to see what linux is capable of on this macbook hardware. There was no turning back at this point anyway until a couple of days later when I could get the install USB stick from the office.</p>
+
+<p>This means that the dual boot system quickly became a 100% linux installation.</p>
+
+<p>As we all know SSD drives are much much faster than HDD drives but their life span is shorter apparently(no SSD drive has died on me yet). In order to prolongue the life of the SSD I&rsquo;ve enabled trim on the non-encrypted partitions, for reference here are the SSD trim settings that I use.
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>less /etc/fstab
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'><span class="nv">UUID</span><span class="o">=</span>&lt;some_long_number&gt; /               ext4    discard,errors<span class="o">=</span>remount-ro <span class="m">0</span>       1
+</span><span class='line'><span class="nv">UUID</span><span class="o">=</span>&lt;some_long_number&gt; /home           ext4    discard,defaults        <span class="m">0</span>       2
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;I disable the SSD trim-ing <span class="k">for</span> the encrypted partition with xfs on top of LUKS&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;UUID<span class="o">=</span>&lt;some_long_number&gt; /&lt;some_location&gt;    xfs     defaults,nodiscard <span class="m">0</span>    2
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>Because this is a work laptop I&rsquo;ve decided to also encrypt a single partition that holds all sensitive data.</p>
+
+<h3>HDD encryption</h3>
+
+<p>I won&rsquo;t delve too much into the SSD encryption, this whole area deserves its own blog post entry.</p>
+
+<p>Enough to say that I&rsquo;ve used an encrypted LUKS volume.</p>
+
+<p>Using a LUKS encrypted partition, with the aid of <code>cryptsetup</code>, and <code>libpam-mount</code> allows me to automatically mount the encrypted partition after I type the login password for my user ( in a cold boot situation ).</p>
+
+<h3>Build yourself a new kernel</h3>
+
+<p>I can&rsquo;t remember 100% why, but I had to build a whole new kernel, that didn&rsquo;t ship with ubuntu 14.04 at the time of the installation.</p>
+
+<p>I think the reason for building a newer kernel was to boot from a <code>3.16.x</code> kernel so that I can get support for the hardware / multimedia buttons on the macbook pro&rsquo;s factory crippled keyboard ( I&rsquo;m referring to missing keyboard keys compared to non-apple laptops if you haven&rsquo;t spotted the pun :) ).</p>
+
+<p>If anybody else is using linux on a macbook pro and is running a newer than <code>3.16.x</code> kernel and it works, please shout and I&rsquo;ll give it a try.</p>
+
+<p>This blog post [4] has a pretty good approximation of the steps I took to compile a new kernel, I don&rsquo;t have notes from my kernel compilation.</p>
+
+<h3>Wireless</h3>
+
+<p><figure class='code'><figcaption><span>wireless adapter </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>lspci
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'>03:00.0 Network controller: Broadcom Corporation BCM4360 802.11ac Wireless Network Adapter <span class="o">(</span>rev 03<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>To install the wireless driver, which Ubiquity wasn&rsquo;t be able to do for you at that time, I had to use the USB-to-ethernet dongle(wired networking) , download these 2 packges from <a href="http://packages.ubuntu.com/">http://packages.ubuntu.com/</a> :</p>
+
+<ul>
+<li><code>bcmwl-kernel_source</code> ( for the broadcom driver )</li>
+<li><code>dkms</code></li>
+</ul>
+
+
+<p>and install them by hand.</p>
+
+<p>After that the wireless works as intended.</p>
+
+<p>The problem that I&rsquo;ve found with the wireless card is that newer kernels from the ubuntu kernel ppa don&rsquo;t work with it. ( I haven&rsquo;t tried any of the 4.x kernels lately )</p>
+
+<p>If you&rsquo;re running a newer kernel version on your macbook shout on a twitter DM and I&rsquo;ll look into it.</p>
+
+<h3>Video cards</h3>
+
+<p><figure class='code'><figcaption><span>nvidia video card </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>lspci
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'>01:00.0 VGA compatible controller: NVIDIA Corporation GK107M <span class="o">[</span>GeForce GT 750M Mac Edition<span class="o">]</span> <span class="o">(</span>rev a1<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>The macbook pro retina comes with 2 graphics cards. An integrated Intel Iris 5200 1.5GB RAM graphics card for <em>light graphics tasks</em> and a discrete Nvidia Geforce GT 750M 2GB RAM for <em>heavy graphics tasks</em>.</p>
+
+<p>Unlike the first generation of macbook pro retina which had a BIOS/physical switch for the graphics cards the late 2013 macbook pro retina 11,3 comes with a <strong>downgrade</strong> in terms of video switching.</p>
+
+<p>The switching between the intel card which consumes far far less power and the power hungry nvidia card happens all in software ( inside the OSx OS ) [5]</p>
+
+<p>This weird software switch plus the fact that the 2 thunderbolt/mini-DVI ports on the laptop are <strong>tied</strong> to the discrete nvidia card means that it is impossible to use the intel graphics card, especially since I&rsquo;m using 2 external monitors.</p>
+
+<p>This intentional crippling exists even if the Intel Iris 5200 can easily support 2 external monitors on the versions of macbook pro retina that only come with an integrated Iris 5200 card. [6]</p>
+
+<p>Currently I can only use the nvidia graphics card, the intel card is <em>invisible</em> to my linux installation.</p>
+
+<p>For the nvidia driver I initially installed the driver that was present in the ubuntu repos</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo apt-get install -y nvidia-331
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>then I&rsquo;ve found out about the xorg-edgers ppa repo and I continue to this day to update the nvidia driver via this ppa</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo add-apt-repository ppa:xorg-edgers/ppa
+</span><span class='line'>sudo apt-get update
+</span><span class='line'>sudo apt-get install nvidia-340
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>Gaming</h4>
+
+<p>I&rsquo;ve installed the Steam client and have played a couple of hours of dota2 to test the graphics functionality of the Nvidia graphics card.</p>
+
+<p>I&rsquo;ve ran dota2 at near max settings, without antialiasing, I think, it was working well enough, I didn&rsquo;t spot any glitches.</p>
+
+<p>Since this test I&rsquo;ve not played any games on this laptop.</p>
+
+<p>For gaming and other video intensive tasks ( think video editing ) I have a Linux KVM VGA passthrough VM ( virtual machine, you read it correctly ), running on a desktop computer.</p>
+
+<p>This should be a good topic for another blog post.</p>
+
+<h3>Desktop environment</h3>
+
+<p>The desktop environment that feels the most useful to me is KDE.</p>
+
+<p>I&rsquo;ve used many DEs and dabbled with some standalone WMs during my journeys into the linux world: kde3.x, gnome2.x, xfce, unity, fluxbox, openbox, briefly gnome3.x, kde4.x</p>
+
+<p>Fair to say that I&rsquo;ve seen many approaches to the UI in linux.</p>
+
+<p>I currently use the KDE version packaged with Ubuntu14.04, which is KDE 4.13.3, as my daily DE. I&rsquo;ve been using KDE4.x for the last 2 years.</p>
+
+<p>I&rsquo;ve used unity before and during multiple sleep/wake-up cycles it used to leak memory like crazy and become really slow on a quad core i7 laptop. That was unnaceptable ! This wasn&rsquo;t my only gripe with unity, just one of the ones I can remember now.</p>
+
+<p>To install KDE over the ubuntu install that comes with unity all I had to do was:</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo apt-get install -y kubuntu-desktop
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>After this logout and, and on login, choose KDE as the desktop environment. That is all there is to installing KDE over a standard Ubuntu installation.</p>
+
+<p>I won&rsquo;t go into much detail on why I like KDE as a DE, I&rsquo;ll enumerate just a few useful features:</p>
+
+<ul>
+<li>kwin is without a doubt one of the best window managers out there, maybe even the best window manager</li>
+<li>KDE&rsquo;s notification tray allows me to catchup on lost notifications, a feature that I&rsquo;ve not seen implemented in any of the other DEs or even the OSx notifications</li>
+<li>customisations galore in the KDE UI allows the user to transform the DE as she/he chooses or to just use the defaults. The fact that it caters for both categories of users is a big plus in my book.</li>
+<li>the fact that kwin comes with just enough features from a tiling window manager, without being a full tiling window manager, is another big plus for me. In my workflow I have to tile windows to a corner of the monitor, or to half of the monitor using keyboard shortcuts. kwin has this feature builtin.</li>
+</ul>
+
+
+<h4>Tiling window support</h4>
+
+<p>You&rsquo;ll find the keyboard shortcuts for tiling kwin windows in the system settings:
+<code>
+System setting -&gt; Shortcuts and gestures -&gt; Global keyboard shortcuts -&gt; select KWIN in the KDE component dropdown -&gt; search for the word tile
+</code></p>
+
+<p>You can achieve the same effect by using the mouse. I find myself using the keyboard 99% of the time for tiling windows though.</p>
+
+<h3>Keyboard</h3>
+
+<h4>Screen backlight / media buttons / keyboard backlight</h4>
+
+<p>The macbook pro <strong>media keys and keyboard backlight keys</strong> worked out of the box after installing KDE and booting the <code>3.16.x</code> kernel, I didn&rsquo;t have to do anything else to get these keys to work.</p>
+
+<p>On the other hand to get the <strong>panel brightness keys</strong> to actually change the brightness of the laptop panel I had to add this in my <code>/etc/rc.local</code>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;enable panel brightness keys on macbook pro retina 15&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;setpci -v -H1 -s 00:01.00 <span class="nv">BRIDGE_CONTROL</span><span class="o">=</span>0
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>F1-F12 keys</h4>
+
+<p>By default the <code>hid_apple</code> driver recognises the keyboard including the backlight keys and uses them as you would on an OSx installation.</p>
+
+<p>I want to use the F1-F12 keys as function keys. The apple keyboard is missing other keyboard keys as it is anyway ( no insert, no delete keys &hellip;) , I don&rsquo;t want to loose the F1-F12 keys as well.</p>
+
+<p>To set the the F1-F12 keys to normal functionality ( pressing Fn + F10 for muting the volume and pressing just F10 means F10 for example ) I had to change the behaviour of the <code>hid_apple</code> driver, regenerate the kernel initramfs and reboot.</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">echo </span>options hid_apple <span class="nv">fnmode</span><span class="o">=</span><span class="m">2</span> <span class="p">|</span> sudo tee -a /etc/modprobe.d/hid_apple.conf
+</span><span class='line'>sudo update-initramfs -u -k all
+</span><span class='line'>sudo reboot
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h3>Font-antialiasing</h3>
+
+<p>KDE supports font antialiasing natively and it is easy to setup by using the System Settings GUI.
+<img class="center" src="/images/posts/font-anti-aliasing-kde4x-01.png" title="&lsquo;font settings&rsquo;" >
+<img class="center" src="/images/posts/font-anti-aliasing-kde4x-02.png" title="&lsquo;anti-aliasing font settings&rsquo;" ></p>
+
+<h3>Touchpad</h3>
+
+<h4>Normal mode scrolling</h4>
+
+<p>This is the normal mode of scrolling, meaning different than what the apple marketing machinery has named <em>natural scrolling</em> which is reverse scrolling.</p>
+
+<p>KDE&rsquo;s system settings comes by default with normal scrolling or if you really prefer it you can have reverse scrolling, just change the touchpad settings.</p>
+
+<h4>Multitouch</h4>
+
+<p>By default the only multitouch gesture supported out of the box by a KDE 4.x installation is two finger scrolling. Set it up in the System Settings GUI and you&rsquo;re done.</p>
+
+<p>If you want to enable ala OSx multitouch in linux, here is another person that has solved that problem. [9]</p>
+
+<h1>Laptop functions that work</h1>
+
+<h3>Sleep</h3>
+
+<p>Putting the laptop to sleep and waking up the laptop works flawlesly almost 100% of times.</p>
+
+<p>Sleeping is a little slow , after you close the lid it takes 30s until the laptop actually goes to sleep. Waking up is also not instantaneous, it takes 3-5s to wake up.</p>
+
+<p><em>For comparison purposes: sleep and wakeup is literally instantaneous on a thinkpad, tested on a a much older thinkpad with an i3 processor and on another newer than the macbook, with an i5 processor</em></p>
+
+<p>One glitch with sleep/wakeup cycles is that very rarely, the laptop refuses to go to sleep when you close the lid. After a reboot the laptop starts behaving normally again with regards to the sleeping functionality. I&rsquo;ve seen this happen to my colleagues running OSx, although less often. The fact that this buggy behaviour is present on OSx and with the ubuntu package upgrade cycle ( some of which require a reboot anyway ) this glitch is not that annoying or noticeable.</p>
+
+<h3>Battery life</h3>
+
+<p>The battery life is not as good as it is on OSx, I can get ~70% of the battery life that you get on OSx.</p>
+
+<p>Battery life for me is between 4 to 5 hours depending on the workload, where on OSx my colleagues can get a battery life of 7 hours maximum.</p>
+
+<p>There are many microcontrollers/microchips on the macbook pro motherboard that the linux kernel doesn&rsquo;t know how to put into sleep mode since it is missing the drivers to talk to them. Missing drivers for the mainboard microcontrollers is showed by the fact that if I sleep the laptop over the weekend when I come back and wake it up the battery is low as if <em>something</em> was draining the battery in sleep mode.</p>
+
+<p>If drivers would exist then I&rsquo;m sure battery life would be in the range of 95-99% of the battery life in OSx, there isn&rsquo;t anything magic about battery life but using the right drivers and using applications that are not battery hogs.</p>
+
+<h4>TLP settings</h4>
+
+<p>In linux I&rsquo;ve used tlp to manage battery power settings.</p>
+
+<p><figure class='code'><figcaption><span>/etc/default/tlp </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">TLP_ENABLE</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">DISK_IDLE_SECS_ON_AC</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">DISK_IDLE_SECS_ON_BAT</span><span class="o">=</span>2
+</span><span class='line'><span class="nv">MAX_LOST_WORK_SECS_ON_AC</span><span class="o">=</span>15
+</span><span class='line'><span class="nv">MAX_LOST_WORK_SECS_ON_BAT</span><span class="o">=</span>60
+</span><span class='line'><span class="nv">CPU_SCALING_GOVERNOR_ON_AC</span><span class="o">=</span>ondemand
+</span><span class='line'><span class="nv">CPU_SCALING_GOVERNOR_ON_BAT</span><span class="o">=</span>powersave
+</span><span class='line'><span class="nv">CPU_BOOST_ON_AC</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">CPU_BOOST_ON_BAT</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">SCHED_POWERSAVE_ON_AC</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">SCHED_POWERSAVE_ON_BAT</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">NMI_WATCHDOG</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">DISK_DEVICES</span><span class="o">=</span><span class="p">&amp;</span>ldquo<span class="p">;</span>sda sdb<span class="p">&amp;</span>rdquo<span class="p">;</span>
+</span><span class='line'><span class="nv">DISK_APM_LEVEL_ON_AC</span><span class="o">=</span><span class="p">&amp;</span>ldquo<span class="p">;</span><span class="m">254</span> 254<span class="p">&amp;</span>rdquo<span class="p">;</span>
+</span><span class='line'><span class="nv">DISK_APM_LEVEL_ON_BAT</span><span class="o">=</span><span class="p">&amp;</span>ldquo<span class="p">;</span><span class="m">128</span> 128<span class="p">&amp;</span>rdquo<span class="p">;</span>
+</span><span class='line'><span class="nv">SATA_LINKPWR_ON_AC</span><span class="o">=</span>max_performance
+</span><span class='line'><span class="nv">SATA_LINKPWR_ON_BAT</span><span class="o">=</span>medium_power
+</span><span class='line'><span class="nv">PCIE_ASPM_ON_AC</span><span class="o">=</span>performance
+</span><span class='line'><span class="nv">PCIE_ASPM_ON_BAT</span><span class="o">=</span>powersave
+</span><span class='line'><span class="nv">RADEON_POWER_PROFILE_ON_AC</span><span class="o">=</span>high
+</span><span class='line'><span class="nv">RADEON_POWER_PROFILE_ON_BAT</span><span class="o">=</span>low
+</span><span class='line'><span class="nv">RADEON_DPM_STATE_ON_AC</span><span class="o">=</span>performance
+</span><span class='line'><span class="nv">RADEON_DPM_STATE_ON_BAT</span><span class="o">=</span>battery
+</span><span class='line'><span class="nv">RADEON_DPM_PERF_LEVEL_ON_AC</span><span class="o">=</span>auto
+</span><span class='line'><span class="nv">RADEON_DPM_PERF_LEVEL_ON_BAT</span><span class="o">=</span>auto
+</span><span class='line'><span class="nv">WIFI_PWR_ON_AC</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">WIFI_PWR_ON_BAT</span><span class="o">=</span>5
+</span><span class='line'><span class="nv">WOL_DISABLE</span><span class="o">=</span>Y
+</span><span class='line'><span class="nv">SOUND_POWER_SAVE_ON_AC</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">SOUND_POWER_SAVE_ON_BAT</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">SOUND_POWER_SAVE_CONTROLLER</span><span class="o">=</span>Y
+</span><span class='line'><span class="nv">BAY_POWEROFF_ON_BAT</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">BAY_DEVICE</span><span class="o">=</span><span class="p">&amp;</span>ldquo<span class="p">;</span>sr0<span class="p">&amp;</span>rdquo<span class="p">;</span>
+</span><span class='line'><span class="nv">RUNTIME_PM_ON_AC</span><span class="o">=</span>auto
+</span><span class='line'><span class="nv">RUNTIME_PM_ON_BAT</span><span class="o">=</span>auto
+</span><span class='line'><span class="nv">RUNTIME_PM_ALL</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">USB_AUTOSUSPEND</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">USB_BLACKLIST_WWAN</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">RESTORE_DEVICE_STATE_ON_STARTUP</span><span class="o">=</span>0
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h3>External multiple monitors</h3>
+
+<p>The macbook pro has 2 thunderbolt/mini-DVI video outputs on the left and 1 HDMI video output on the right side.</p>
+
+<p>The video output combinations that I&rsquo;ve tried and work are:</p>
+
+<ul>
+<li>2 external monitors via the thunderbolt/mini-DVI video output and the laptop panel.</li>
+<li>1 external monitor via one of the thunderbolt/mini-DVI video output and the laptop panel.</li>
+<li>1 external monitor or external smart-tv via the HDMI video output and the laptop panel.</li>
+</ul>
+
+
+<p>All three described setups works in a plug-and-play fashion with the nvidia driver installed.</p>
+
+<p>The single glitch with external single/multiple monitors is the fact that the laptop panel must set to the maximum resolution, 2880x1800.</p>
+
+<p>See the video showcase for how external monitors work with Ubuntu on the macbook pro retina.</p>
+
+<h3>USB to Ethernet adapter</h3>
+
+<p>The USB to Ethernet adapter works flawlesly without any intervention. Just plug it and use it.</p>
+
+<h1>Laptop functions that don&rsquo;t work and glitches</h1>
+
+<h3>webcam</h3>
+
+<p>The iSight webcam that comes with this version of the macbook pro retina doesn&rsquo;t work at all under linux.</p>
+
+<p>There are various bugs on launchpad against Ubuntu, and on bugzilla.kernel.org against the linux kernel to get the iSight camera to work. [7] [8]</p>
+
+<p>If anyone has got the iSight camera working let me know.</p>
+
+<h3>USB glitch</h3>
+
+<p>Extremely rarely the USB on the right side, next to the HDMI cable, throws this weird stacktrace and refuses to continue working.</p>
+
+<p>The USB refuses to work after wakeup from sleep mode, throwing this error message in syslog.
+I have to reboot as a workaround for this glitch.</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'>Freezing of tasks failed after 20.007 seconds <span class="o">(</span><span class="m">1</span> tasks refusing to freeze, <span class="nv">wq_busy</span><span class="o">=</span>0<span class="o">)</span>:
+</span><span class='line'>Jan <span class="m">20</span> 19:46:42 &lt;edited&gt; kernel: <span class="o">[</span>57081.365212<span class="o">]</span> khubd           D <span class="m">0000000000000001</span>     <span class="m">0</span>    <span class="m">74</span>      <span class="m">2</span> 0x00000000
+</span><span class='line'>Jan <span class="m">20</span> 19:46:42 &lt;edited&gt; kernel: <span class="o">[</span>57081.365215<span class="o">]</span>  ffff88046442f918 <span class="m">0000000000000046</span> <span class="m">0000000000000086</span> ffff88046442ffd8
+</span><span class='line'>Jan <span class="m">20</span> 19:46:42 &lt;edited&gt; kernel: <span class="o">[</span>57081.365217<span class="o">]</span>  <span class="m">0000000000014400</span> <span class="m">0000000000014400</span> ffff8804653a1440 ffff880464430000
+</span><span class='line'>Jan <span class="m">20</span> 19:46:42 &lt;edited&gt; kernel: <span class="o">[</span>57081.365218<span class="o">]</span>  <span class="m">0000000000000006</span> ffff88046442f950 0000000100d8b955 ffff880464e40000
+</span><span class='line'>Jan <span class="m">20</span> 19:46:42 &lt;edited&gt; kernel: <span class="o">[</span>57081.365220<span class="o">]</span> Call Trace:
+</span><span class='line'>Jan <span class="m">20</span> 19:46:42 &lt;edited&gt; kernel: <span class="o">[</span>57081.365226<span class="o">]</span>  <span class="o">[</span>&lt;ffffffff82790129&gt;<span class="o">]</span> schedule+0x29/0x70
+</span><span class='line'>Jan <span class="m">20</span> 19:46:42 &lt;edited&gt; kernel: <span class="o">[</span>57081.365227<span class="o">]</span>  <span class="o">[</span>&lt;ffffffff8278f4ac&gt;<span class="o">]</span> schedule_timeout+0x11c/0x210
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'>Restarting kernel threads <span class="p">&amp;</span>hellip<span class="p">;</span> <span class="k">done</span>.
+</span><span class='line'>Jan <span class="m">20</span> 19:46:42 &lt;edited&gt; kernel: <span class="o">[</span>57081.365453<span class="o">]</span> Restarting tasks <span class="p">&amp;</span>hellip<span class="p">;</span> <span class="k">done</span>.
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>Since it happens extremely rarely this USB glitch is hardly noticeable, I have to reboot on a fairly regular basis for package updates anyway.</p>
+
+<h3>kded4/kdeinit4 crashes sometimes</h3>
+
+<p>Sometimes, when plugging and unplugging multiple monitors, many times in a day the <code>kded4 / kdeinit4</code> daemon crashes.</p>
+
+<p>The icons change in the system notification area when <code>kded4</code> crashes and the external monitor doesn&rsquo;t output anything when <code>kded4</code> crashes. You can&rsquo;t miss it :)</p>
+
+<p>The workaround is very very simple for this bug, open a terminal and type ( as your user, sudo/root is not needed )
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>kded4 <span class="p">&amp;</span>amp<span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>After typing this the icons change to their normal look and the video output starts outputting on the external monitor.</p>
+
+<h1>Other fixes and hacks that I employ</h1>
+
+<h2>Scripted resolution scaling</h2>
+
+<p>Using a macbook pro retina with external monitors requires that I scale the resolution, to maximum, when plugging in the external monitors, and to 1920x1080 when using it the laptop by itself.</p>
+
+<p>To achieve this fast scaling without opening the nvidia driver UI or the KDE display configuration UI I&rsquo;ve found and altered a shell script to quickly change resolution by using xrandr. [13]</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>to switch to the maximum resolution
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'>~/bin/macbook_pro_screen_resolution.sh 2880&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;to switch to the scaled <span class="m">1920</span> resolution useable when using the laptop without external monitors&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;~/bin/macbook_pro_screen_resolution.sh 1920
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h2>kworker hogging cpu</h2>
+
+<p>This issue <strong>is not caused by running linux on a macbook pro</strong>, it is related to the combination of ubuntu linux distro and kernel version. The same issue has happened to other people on different hardware.</p>
+
+<p>This hasn&rsquo;t happen in a long long time, but since I have some notes I&rsquo;ll add it in this blog post for posterity.</p>
+
+<p>In the beginnings, after the install in 2014, there were times when, sometimes, one kworker thread would hog a CPUs continuously.</p>
+
+<p>To fix it you must find the kworker thread and disable it.
+<code>bash
+grep enabled /sys/firmware/acpi/interrupts/*
+echo "disable" &gt; /sys/firmware/acpi/interrupts/gpeXX
+</code></p>
+
+<p>Follow these links to detailed articles on what and why kworker is hogging a cpu [10] [11] [12]</p>
+
+<h2>Touchpad / trackpad settings</h2>
+
+<p>To decrease the sensitivity of the trackpad in KDE, I&rsquo;ve used some of the trackpad settings from unity.</p>
+
+<p>To have the keyboard settings activate on KDE login I&rsquo;ve created a <code>~/.xinitrc</code> file with this content:</p>
+
+<p><figure class='code'><figcaption><span>.xinitrc </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;!/bin/bash&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;synclient <span class="nv">MaxTapMove</span><span class="o">=</span>535
+</span><span class='line'>synclient <span class="nv">VertScrollDelta</span><span class="o">=</span>243
+</span><span class='line'>synclient <span class="nv">HorizScrollDelta</span><span class="o">=</span>243
+</span><span class='line'>synclient <span class="nv">VertEdgeScroll</span><span class="o">=</span>0
+</span><span class='line'>synclient <span class="nv">HorizEdgeScroll</span><span class="o">=</span>0
+</span><span class='line'>synclient <span class="nv">MinSpeed</span><span class="o">=</span>1
+</span><span class='line'>synclient <span class="nv">MaxSpeed</span><span class="o">=</span>1.75
+</span><span class='line'>synclient <span class="nv">AccelFactor</span><span class="o">=</span>0.0164447
+</span><span class='line'>synclient <span class="nv">TouchpadOff</span><span class="o">=</span>0
+</span><span class='line'>synclient <span class="nv">RTCornerButton</span><span class="o">=</span>2
+</span><span class='line'>synclient <span class="nv">CircScrollDelta</span><span class="o">=</span>0.1
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h1>Video showcase</h1>
+
+<p>Stay tuned for part 2 of this blog post where I will have some youtube videos of how the laptop works with linux on it.</p>
+
+<h1>Comments</h1>
+
+<p>If you have any comments please use twitter DM, I&rsquo;ve not enabled any comments on this blog yet.</p>
+
+<h1>Resources and inspiration</h1>
+
+<p>[1] - <a href="http://www.rodsbooks.com/refind/installing.html">http://www.rodsbooks.com/refind/installing.html</a></p>
+
+<p>[2] - <a href="http://glandium.org/blog/?p=2830">http://glandium.org/blog/?p=2830</a></p>
+
+<p>[3] - <a href="https://wiki.ubuntu.com/Ubiquity">https://wiki.ubuntu.com/Ubiquity</a></p>
+
+<p>[4] - <a href="https://blog.jessfraz.com/post/linux-on-mac/">https://blog.jessfraz.com/post/linux-on-mac/</a></p>
+
+<p>[5] - <a href="http://www.everymac.com/systems/apple/macbook_pro/macbook-pro-retina-display-faq/macbook-pro-retina-display-how-to-manually-switch-graphics.html">http://www.everymac.com/systems/apple/macbook_pro/macbook-pro-retina-display-faq/macbook-pro-retina-display-how-to-manually-switch-graphics.html</a></p>
+
+<p>[6] - <a href="http://www.everymac.com/systems/apple/macbook_pro/macbook-pro-retina-display-faq/macbook-pro-retina-display-how-to-manually-switch-graphics.html#extdisplays">http://www.everymac.com/systems/apple/macbook_pro/macbook-pro-retina-display-faq/macbook-pro-retina-display-how-to-manually-switch-graphics.html#extdisplays</a></p>
+
+<p>[7] - <a href="https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1287984">https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1287984</a></p>
+
+<p>[8] - <a href="https://bugzilla.kernel.org/show_bug.cgi?id=71131">https://bugzilla.kernel.org/show_bug.cgi?id=71131</a></p>
+
+<p>[9] - <a href="https://medium.com/@PhilPlckthun/ubuntu-14-10-running-on-my-macbook-18991a697ae0">https://medium.com/@PhilPlckthun/ubuntu-14-10-running-on-my-macbook-18991a697ae0</a></p>
+
+<p>[10] - <a href="http://capocasa.net/crushing-the-kworker-uprising-or-how-to-fix-your-linux-lenovo-ideapad-y560p">http://capocasa.net/crushing-the-kworker-uprising-or-how-to-fix-your-linux-lenovo-ideapad-y560p</a></p>
+
+<p>[11] - <a href="https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1087010">https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1087010</a></p>
+
+<p>[12] - <a href="http://askubuntu.com/questions/33640/kworker-what-is-it-and-why-is-it-hogging-so-much-cpu">http://askubuntu.com/questions/33640/kworker-what-is-it-and-why-is-it-hogging-so-much-cpu</a></p>
+
+<p>[13] - <a href="https://gist.github.com/stefancocora/476bcaa51115cb28b174">https://gist.github.com/stefancocora/476bcaa51115cb28b174</a></p>
+
+<p>[14] - <a href="https://support.apple.com/kb/SP690?locale=en_GB">https://support.apple.com/kb/SP690?locale=en_GB</a></p>
+
+<p>[15] - <a href="https://help.ubuntu.com/community/MacBookPro11-3">https://help.ubuntu.com/community/MacBookPro11-3</a></p>
+
+<p>[16] - <a href="http://ark.intel.com/products/76086/Intel-Core-i7-4850HQ-Processor-6M-Cache-up-to-3_50-GHz">http://ark.intel.com/products/76086/Intel-Core-i7-4850HQ-Processor-6M-Cache-up-to-3_50-GHz</a></p>
+
+<p>[17] - <a href="https://unix.stackexchange.com/questions/148356/how-to-know-if-im-booting-using-uefi">https://unix.stackexchange.com/questions/148356/how-to-know-if-im-booting-using-uefi</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[X2go and Ssh Ecdsa Keys]]></title>
