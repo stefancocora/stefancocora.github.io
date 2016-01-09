@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Videoedit | The inception and journey of ideas]]></title>
+  <link href="http://www.procmind.com/blog/categories/videoedit/atom.xml" rel="self"/>
+  <link href="http://www.procmind.com/"/>
+  <updated>2016-01-09T19:31:47+00:00</updated>
+  <id>http://www.procmind.com/</id>
+  <author>
+    <name><![CDATA[procmind]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Driving a Macbook Pro Retina Part 2]]></title>
+    <link href="http://www.procmind.com/blog/2015/12/23/linux-driving-a-macbook-pro-retina-part-2/"/>
+    <updated>2015-12-23T12:02:50+00:00</updated>
+    <id>http://www.procmind.com/blog/2015/12/23/linux-driving-a-macbook-pro-retina-part-2</id>
+    <content type="html"><![CDATA[<p>This is part 2 of the series of posts describing how to drive a macbook pro retina with linux.</p>
+
+<!-- more -->
+
+
+<h1>Videos</h1>
+
+<h1>Other improvements</h1>
+
+<h2>New kernel</h2>
+
+<h3>kernel 3.19.8</h3>
+
+<h2>mbpfan</h2>
+]]></content>
+  </entry>
+  
+</feed>
